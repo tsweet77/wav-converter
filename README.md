@@ -1,7 +1,7 @@
 # wav-converter
 Converts any file (&lt;~20MB) into a 96kHz Mono WAV file.
 
-I created a Tensor to map Image bytes (0 - 255) to WAV Audio bytes (-32767 - +32767).
+I created a Tensor to map image/file bytes (0 - 255) to WAV Audio bytes (-32767 - +32767).
 
 The resulting WAV file defaults to 10 minutes long and 95% volume.
 
