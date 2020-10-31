@@ -11,6 +11,6 @@ It is meant to be played through Scalar Tech such as a Succor Punch or powered O
 
 But playing it at a low level can have benefits as well.
 
-You can convert a picture of Marijuana and by listening potentially feel stoned.
+For instance, you can convert a picture of Marijuana to WAV, and by listening potentially feel stoned.
 
 It captures the energy of the picture as well, and not just the bytes of data.
