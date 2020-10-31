@@ -14,3 +14,5 @@ But playing it at a low level can have benefits as well.
 For instance, you can convert a picture of Marijuana to WAV, and by listening potentially feel stoned.
 
 It captures the energy of the picture as well, and not just the bytes of data.
+
+You probably want intention_repeater_wav_converter.py
