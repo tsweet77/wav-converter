@@ -1,14 +1,17 @@
-// wav_repeater.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
-#include "helpers.h"
-
-
-
-
-
-
-
+/*
+Intention Repeater WAV Converter v2 created by Thomas Sweet.
+Converts any file <~20MB or less into a 96kHz Mono WAV File.
+Defaults to a 10 Minute WAV file.
+Updated 2/14/2021 v2.0
+Usage: wav_repeater.exe --help
+Intention Repeater is powered by a Servitor (20 Years / 2000+ hours in the making)
+Servitor Info: https://web.archive.org/web/20200915191532/https://enlightenedstates.com/2017/04/07/servitor-just-powerful-spiritual-tool/
+Website: https://www.intentionrepeater.com/
+Forum: https://forums.intentionrepeater.com/
+Licensed under GNU General Public License v3.0
+This means you can modify, redistribute and even sell your own modified software, as long as it's open source too and released under this same license.
+https://choosealicense.com/licenses/gpl-3.0/
+*/
 
 // This is the same function in Python file. just re-wrote in C++
 std::string bytes_format(unsigned int B) 
