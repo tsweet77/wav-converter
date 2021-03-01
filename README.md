@@ -15,7 +15,7 @@ For instance, you can convert a picture of Marijuana to WAV, and by listening po
 
 It captures the energy of the picture as well, and not just the bytes of data.
 
-You probably want intention_repeater_wav_converter.py
+You probably want wav_repeater.exe
 
 Intention Repeater Website: https://www.intentionrepeater.com
 
