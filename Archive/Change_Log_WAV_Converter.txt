@@ -1,0 +1,4 @@
+10/26/2020 v1.0 Created.
+10/28/2020 v1.1 Converted to automate with total time of WAV file desired, rather than runtime.
+10/28/2020 v1.2 Fixed a bug with automation. Updated to 95% default Volume level to prevent possible clipping of audio.
+10/30/2020 v1.3 Converted to default to 10 Minutes runtime. Fixed display to be better when converting.

@@ -1,0 +1,3 @@
+g++ -O3 wav_repeater.cpp tinywav.cpp -o wav_repeater.exe  -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic
+
+Usage: wav_repeater.exe --help
