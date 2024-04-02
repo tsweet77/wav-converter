@@ -25,6 +25,8 @@ using namespace filesystem;
 #include <bit>
 #include <codecvt>
 #include <locale>
+#include <numeric>
+#include <vector>
 /// ////////////////////////////////////////////START OF RIFF WAVE TAG ///////////////////////////////////////////////////////////////////////////
 const uint32_t headerChunkSize = 0; /// PLACE HOLDER FOR RIFF HEADER CHUNK SIZE
 /// /////////FORMAT CHUNK////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,6 +52,18 @@ double M_PI = 3.141592653589793238462643383279502884197;
 std::wstring intention = L"";
 std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
 
+// Function to calculate the mean of character values
+// Function to calculate mean
+double calculateMean(const std::vector<int>& values) {
+    return std::accumulate(values.begin(), values.end(), 0.0) / values.size();
+}
+// Function to calculate standard deviation
+double calculateStdDev(const std::vector<int>& values, double mean) {
+    double sum = std::accumulate(values.begin(), values.end(), 0.0, [mean](double acc, int val) {
+        return acc + std::pow(val - mean, 2);
+    });
+    return std::sqrt(sum / values.size());
+}
 std::wstring utf8_to_wstring(const std::string& str)
 {
     std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
@@ -210,6 +224,24 @@ void writeListHeaderSizeChunkElement(ofstream &wavFile, const uint32_t position,
 int ord(char c)
 {
     return static_cast<int>(c);
+}
+// Function to filter characters by excluding outliers
+std::wstring filterOutliers(const std::wstring& text, double numStdDev) {
+    std::vector<int> values;
+    for (wchar_t wc : text) {
+        values.push_back(static_cast<int>(wc));
+    }
+    
+    double mean = calculateMean(values);
+    double stdDev = calculateStdDev(values, mean);
+    
+    std::wstring result;
+    for (size_t i = 0; i < text.length(); ++i) {
+        if (std::abs(values[i] - mean) <= numStdDev * stdDev) {
+            result += text[i];
+        }
+    }
+    return result;
 }
 std::pair<uint32_t, uint32_t> findMinMaxASCII(const std::wstring &input)
 {
@@ -519,6 +551,7 @@ void setupQuestions()
             inputFile.clear();
         }
     }
+    intention = filterOutliers(intention, 1.5);
     int repeatIntention = 0;
     while (repeatIntention < 1 || repeatIntention > 1000000)
     {
