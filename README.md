@@ -1,6 +1,10 @@
 # wav-converter
 Converts any Image or Text file (&lt;~20MB) into a Mono WAV file.
 
+You probably want one of the Image_to_WAV_Repeater_Smoothing files.
+
+With 50% smoothing binary files sound pretty good.
+
 Intention Repeater Website: https://www.intentionrepeater.com
 
 Intention Repeater Forums: https://forums.intentionrepeater.com
