@@ -170,16 +170,7 @@ std::pair<int, int> findMinMaxASCII(const std::string &input)
 }
 void writeDataChunk(ofstream &wavFile, const std::string textToTransmit)
 {
-    std::string filteredText;
-    //const size_t bufferSize = 1024 * 1024; // Adjust the buffer size as needed
-    for (char c : textToTransmit)
-    {
-        if (std::isalnum(c) || std::isspace(c))
-        {
-            filteredText += c;
-        }
-    }
-    auto [minOrd, maxOrd] = findMinMaxASCII(filteredText);
+    auto [minOrd, maxOrd] = findMinMaxASCII(textToTransmit);
     min_ascii = minOrd;
     max_ascii = maxOrd;
     ascii_range = maxOrd - minOrd;
@@ -208,9 +199,9 @@ void writeDataChunk(ofstream &wavFile, const std::string textToTransmit)
     const size_t bufferSize = 1024 * 1024; // Adjust the buffer size as needed
 
     for (uint32_t i = 0; i < numSamples; ++i) {
-        long char_index = fmod((i / (sampleRate / frequency)), filteredText.size());
-        char current_char = filteredText[char_index];
-        char next_char = filteredText[(char_index + 1) % filteredText.size()];
+        long char_index = fmod((i / (sampleRate / frequency)), textToTransmit.size());
+        char current_char = textToTransmit[char_index];
+        char next_char = textToTransmit[(char_index + 1) % textToTransmit.size()];
 
         double amplitude_current = ((ord(current_char)) - min_ascii) / static_cast<double>(ascii_range);
         double amplitude_next = ((ord(next_char)) - min_ascii) / static_cast<double>(ascii_range);
