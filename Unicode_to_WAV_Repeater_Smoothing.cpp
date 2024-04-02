@@ -1,7 +1,7 @@
 /*
 Unicode to WAV Repeater with Smoothing
 by Anthro Teacher and Nathan
-To Compile: g++ -O3 -Wall -static .\Wav_Repeater_Smoothing.cpp -o .\Wav_Repeater_Smoothing.exe -std=c++20
+To Compile: g++ -O3 -Wall -static .\Unicode_to_WAV_Repeater_Smoothing.cpp -o .\Unicode_to_WAV_Repeater_Smoothing.exe -std=c++20
 */
 
 #include <iostream>
@@ -52,11 +52,39 @@ std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
 
 std::wstring utf8_to_wstring(const std::string& str)
 {
-    return conv.from_bytes(str);
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+    std::wstring result;
+
+    try {
+        result = converter.from_bytes(str);
+    } catch (const std::range_error& e) {
+        // Handle invalid UTF-8 sequence
+        //std::cerr << "Warning: Invalid UTF-8 sequence encountered. Skipping invalid characters." << std::endl;
+
+        // Iterate over each byte of the input string
+        for (std::string::const_iterator it = str.begin(); it != str.end(); ++it) {
+            try {
+                // Attempt to convert each byte individually
+                std::string byte_str(1, *it);
+                std::wstring converted = converter.from_bytes(byte_str);
+                result += converted;
+            } catch (const std::range_error& e) {
+                // Skip the invalid byte and continue with the next one
+                continue;
+            }
+        }
+    }
+
+    return result;
 }
 std::string wstring_to_utf8(const std::wstring& wstr)
 {
-    return conv.to_bytes(wstr);
+    try {
+        return conv.to_bytes(wstr);
+    } catch (const std::range_error& e) {
+        std::cerr << "Error: Invalid wide string sequence. " << e.what() << std::endl;
+        return ""; // Return an empty string or a default value
+    }
 }
 
 uint32_t utf8_codepoint(const wchar_t ch)
@@ -70,7 +98,7 @@ uint32_t utf8_codepoint(const wchar_t ch)
     else if (ch < 0x110000)
         return ((ch >> 18) & 0x07) | 0xF0;
     else
-        return '?'; // Return a default character for invalid UTF-8 codepoints
+        return '?'; // Return a default character for invalid code points
 }
 /// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
@@ -196,9 +224,12 @@ std::pair<uint32_t, uint32_t> findMinMaxASCII(const std::wstring &input)
 
     for (wchar_t ch : input)
     {
-        uint32_t codepoint = utf8_codepoint(ch);
-        minOrd = std::min(minOrd, codepoint);
-        maxOrd = std::max(maxOrd, codepoint);
+        if (ch < 0x110000)
+        {
+            uint32_t codepoint = utf8_codepoint(ch);
+            minOrd = std::min(minOrd, codepoint);
+            maxOrd = std::max(maxOrd, codepoint);
+        }
     }
 
     return {minOrd, maxOrd};
