@@ -28,7 +28,7 @@ using namespace filesystem;
 /// ////////////////////////////////////////////START OF RIFF WAVE TAG ///////////////////////////////////////////////////////////////////////////
 const uint32_t headerChunkSize = 0; /// PLACE HOLDER FOR RIFF HEADER CHUNK SIZE
 /// /////////FORMAT CHUNK////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-const double volume_level = 1.000;                                                                                                                    /// VOLUME LEVEL///
+const double volume_level = 0.99;                                                                                                                    /// VOLUME LEVEL///
 uint16_t audioFormat = 1;                                                                                                                             /// 3 is float 1 is PCM                            /// AN UNKNOWN AT THIS TIME
 uint16_t numChannels = 0;                                                                                                                             /// 8;                                                     /// NUMBER OF CHANNELS FOR OUR AUDIO I PRESUME 1 SAMPLE PER CHANNEL
 uint32_t sampleRate = 0;                                                                                                                              ///  765000.0;                                       /// PRESUMABLY THE NUMBER OF SAMPLES PER SECOND
@@ -289,7 +289,7 @@ void writeDataChunk(ofstream &wavFile, const std::wstring textToTransmit)
         } else {
             double trendingWave = smoothing * sin(phase);
             double smoothedAmplitude = (1.0 - smoothing) * amplitude_interpolated;
-            sample_value = (trendingWave + smoothedAmplitude) * sampleMax;
+            sample_value = (trendingWave + smoothedAmplitude) * sampleMax * volume_level;
         }
 
         for (int j = 0; j < numChannels; ++j) {

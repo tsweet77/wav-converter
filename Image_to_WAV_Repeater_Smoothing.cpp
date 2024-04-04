@@ -546,9 +546,9 @@ void setupQuestions()
         }
     }
 
-    while (volume < 0.0 || volume > 1.0)
+    while (volume < 0.0 || volume > 0.99)
     {
-        std::cout << "Volume (0.0-100.0%, Default 25.0%): ";
+        std::cout << "Volume (0.0-99%, Default 25.0%): ";
         std::getline(std::cin, volume_percent);
         // If rightmost character of volume_percent == "%", then remove that last character
         if (!volume_percent.empty() && volume_percent.back() == '%')
