@@ -1,5 +1,5 @@
 /*
-WAV Repeater with Smoothing
+WAV Converter with Smoothing
 by Anthro Teacher and Nathan
 To Compile: g++ -O3 -Wall -static .\Image_to_WAV_Repeater_Smoothing.cpp -o .\Image_to_WAV_Repeater_Smoothing.exe -std=c++20
 */
@@ -646,9 +646,10 @@ NO_OPTIMIZE void stringMemoryAllocation(const std::string &textParameter)
 
 int main()
 {
-    cout << "Image to WAV Converter v.1.2\n";
+    cout << "Image to WAV Converter v.1.4\n";
     cout << "Copyright (c) 2024 Anthro Teacher\n\n";
     setupQuestions();
+    std::transform(continue_input.begin(), continue_input.end(), continue_input.begin(), ::toupper);
     if ((continue_input != "Y") && (continue_input != "YES"))
     {
         std::cout << "Exiting..." << std::endl;
@@ -661,5 +662,8 @@ int main()
     createWavFile(outputFile);
     // threadExit = true;
     cout << outputFile << " written." << endl;
+    // Wait for user to press enter before exiting
+    std::cout << "Press ENTER to exit...";
+    std::cin.get();
     return 0;
 }

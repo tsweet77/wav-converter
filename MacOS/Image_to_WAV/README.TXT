@@ -1,4 +1,4 @@
-Intention Repeater Image to WAV Converter v1.3
+Intention Repeater Image to WAV Converter v1.4
 by Anthro Teacher aka Thomas Sweet
 Website: http://www.intentionrepeater.com
 Email: healing@intentionrepeater.com
