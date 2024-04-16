@@ -1,7 +1,7 @@
 /*
 WAV Repeater with Smoothing
 by Anthro Teacher and Nathan
-To Compile: g++ -O3 -Wall -static .\Image_to_WAV_Converter_Smoothing.cpp -o .\Image_to_WAV_Converter_Smoothing.exe -std=c++20
+To Compile: g++ -O3 -Wall -static Image_to_WAV_Converter_Smoothing.cpp -o Image_to_WAV_Converter_Smoothing.exe -std=c++20
 */
 
 #include <iostream>
@@ -24,6 +24,9 @@ using namespace filesystem;
 #define BYTEALIGNMENTFORWAVPRODUCER 4
 #endif
 #include <bit>
+
+std::string VERSION = "v1.5";
+
 /// ////////////////////////////////////////////START OF RIFF WAVE TAG ///////////////////////////////////////////////////////////////////////////
 const uint32_t headerChunkSize = 0; /// PLACE HOLDER FOR RIFF HEADER CHUNK SIZE
 /// /////////FORMAT CHUNK////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -46,7 +49,7 @@ uint32_t durationInSeconds = -1; /// 10                                         
 std::string continue_input, volume_percent = "0", inputFile = "", frequency_input = "0", smoothing_percent = "0", sampling_rate_input = "0";
 int ascii_range = 0, min_ascii = 0, max_ascii = 0;
 long long int numSamples = 0;
-double M_PI = 3.141592653589793238462643383279502884197;
+double PI = 3.141592653589793238462643383279502884197;
 std::string filename = "";
 std::vector<char> binaryIntentionData;
 std::vector<char> binaryIntentionDataOriginal;
@@ -82,10 +85,12 @@ std::string removeNonAlphanumeric(const std::string &str)
     }
     return result;
 }
-void ensureDataAlignment(ofstream &wavFile) {
+void ensureDataAlignment(ofstream &wavFile)
+{
     long pos = wavFile.tellp();
     long align = pos % 2;
-    if (align != 0) {
+    if (align != 0)
+    {
         uint8_t paddingByte = 0;
         wavFile.write(reinterpret_cast<const char *>(&paddingByte), sizeof(paddingByte));
     }
@@ -98,7 +103,8 @@ void writeRiffHeader(ofstream &wavFile)
     // std::cout << "Checking Pading Details Current Pos# " << wavFile.tellp() << std::endl;
 }
 /// PRESUMES that when you call the function you are at end of file///
-void writeRiffHeaderSizeElement(ofstream &wavFile) {
+void writeRiffHeaderSizeElement(ofstream &wavFile)
+{
     int fileLength = static_cast<int>(wavFile.tellp());
     uint32_t fileSizeMinus8 = static_cast<uint32_t>(fileLength - 8);
     wavFile.seekp(4, ios::beg);
@@ -180,12 +186,14 @@ std::pair<int, int> findMinMaxASCII(const std::string &input)
     auto minMaxPair = std::minmax_element(input.begin(), input.end());
     return {static_cast<int>(*minMaxPair.first), static_cast<int>(*minMaxPair.second)};
 }
-void writeDataChunk(std::ofstream &wavFile) {
+void writeDataChunk(std::ofstream &wavFile)
+{
     int minCharValue = INT_MAX;
     int maxCharValue = INT_MIN;
 
     // Iterate through binaryIntentionDataOriginal to find min and max values
-    for (char c : binaryIntentionDataOriginal) {
+    for (char c : binaryIntentionDataOriginal)
+    {
         unsigned char uc = static_cast<unsigned char>(c); // Ensure treating as unsigned
         minCharValue = std::min(minCharValue, static_cast<int>(uc));
         maxCharValue = std::max(maxCharValue, static_cast<int>(uc));
@@ -193,56 +201,68 @@ void writeDataChunk(std::ofstream &wavFile) {
 
     int rangeValue = maxCharValue - minCharValue;
     double sampleMax = (bitsPerSample == 16 ? 32767 : 2147483647);
-    //double scalingFactor = sampleMax / rangeValue;
+    // double scalingFactor = sampleMax / rangeValue;
     uint32_t numSamples = binaryIntentionData.size();
     std::vector<char> sample_buffer;
 
-    double phaseIncrement = 2.0 * M_PI * frequency / sampleRate;
+    double phaseIncrement = 2.0 * PI * frequency / sampleRate;
     double phase = 0.0;
     wavFile.write("data", 4);
     const uint32_t dataChunkSizePos = wavFile.tellp();
     wavFile.write(reinterpret_cast<const char *>(&headerChunkSize), sizeof(headerChunkSize));
 
-    for (uint32_t i = 0; i < numSamples; ++i) {
+    for (uint32_t i = 0; i < numSamples; ++i)
+    {
         double charValue = static_cast<unsigned char>(binaryIntentionData[i]) - minCharValue;
         double normalizedCharValue = (charValue / rangeValue) * 2.0 - 1.0; // Normalize to [-1, 1]
 
         double sineValue = std::sin(phase);
         phase += phaseIncrement;
-        if (phase >= 2.0 * M_PI) phase -= 2.0 * M_PI;
+        if (phase >= 2.0 * PI)
+            phase -= 2.0 * PI;
 
         // Modulate based on smoothing
         double modulatedValue;
-        if (smoothing == 1.0) {
+        if (smoothing == 1.0)
+        {
             modulatedValue = sineValue;
-        } else if (smoothing > 0 && smoothing < 1.0) {
+        }
+        else if (smoothing > 0 && smoothing < 1.0)
+        {
             modulatedValue = (normalizedCharValue * (1.0 - smoothing)) + (sineValue * smoothing);
-        } else {
+        }
+        else
+        {
             modulatedValue = normalizedCharValue;
         }
 
         long sample_value = static_cast<long>(modulatedValue * volume * sampleMax);
 
         // Write sample_value to sample_buffer
-        if (bitsPerSample == 32) {
+        if (bitsPerSample == 32)
+        {
             int32_t val = static_cast<int32_t>(sample_value);
-            sample_buffer.insert(sample_buffer.end(), reinterpret_cast<char*>(&val), reinterpret_cast<char*>(&val) + sizeof(val));
-        } else {
+            sample_buffer.insert(sample_buffer.end(), reinterpret_cast<char *>(&val), reinterpret_cast<char *>(&val) + sizeof(val));
+        }
+        else
+        {
             int16_t val = static_cast<int16_t>(sample_value);
-            sample_buffer.insert(sample_buffer.end(), reinterpret_cast<char*>(&val), reinterpret_cast<char*>(&val) + sizeof(val));
+            sample_buffer.insert(sample_buffer.end(), reinterpret_cast<char *>(&val), reinterpret_cast<char *>(&val) + sizeof(val));
         }
 
         // Write buffer to file and clear every 100000 samples
-        if (i % 100000 == 0 && i > 0) {
+        if (i % 100000 == 0 && i > 0)
+        {
             wavFile.write(sample_buffer.data(), sample_buffer.size());
             sample_buffer.clear();
             std::cout << "\rProgress: " << std::fixed << std::setprecision(2) << static_cast<float>(i) / static_cast<float>(numSamples) * 100.0f << "% Samples Written: " << i << "     \r" << std::flush;
         }
     }
     uint32_t actualDataSize = static_cast<uint32_t>(static_cast<int64_t>(wavFile.tellp()) - dataChunkSizePos - 4);
-    if (actualDataSize % 2 != 0) {
+    if (actualDataSize % 2 != 0)
+    {
         uint8_t paddingByte = 0;
-        wavFile.write(reinterpret_cast<const char*>(&paddingByte), sizeof(paddingByte));
+        wavFile.write(reinterpret_cast<const char *>(&paddingByte), sizeof(paddingByte));
         actualDataSize += 1;
     }
     // Ensure data alignment after writing the main data chunk
@@ -253,7 +273,8 @@ void writeDataChunk(std::ofstream &wavFile) {
     wavFile.seekp(0, ios::end);
 
     // Write any remaining samples in buffer to file
-    if (!sample_buffer.empty()) {
+    if (!sample_buffer.empty())
+    {
         wavFile.write(sample_buffer.data(), sample_buffer.size());
         sample_buffer.clear();
     }
@@ -368,9 +389,11 @@ std::string readFileToString(const string &filename)
     return buffer.str();          /// RETURN THE STRINGSTREAM AS A STRING ///
 }
 /// Function to create WAV file with binary data repeated until 1 minute ///
-void createWavFile(const string &filename) {
+void createWavFile(const string &filename)
+{
     ofstream wavFile(filename, ios::binary | ios::trunc);
-    if (!wavFile.is_open()) {
+    if (!wavFile.is_open())
+    {
         cerr << "Error: Unable to create WAV file " << filename << endl;
         exit(EXIT_FAILURE);
     }
@@ -378,12 +401,12 @@ void createWavFile(const string &filename) {
     // Writing headers and data chunks
     writeRiffHeader(wavFile);
     writeFormatHeader(wavFile, formatSize, audioFormat, numChannels, sampleRate, byteRate, blockAlign, bitsPerSample);
-    writeDataChunk(wavFile);  // Writes the bulk of audio data
-    
+    writeDataChunk(wavFile); // Writes the bulk of audio data
+
     // Ensure alignment before finalizing the file
     ensureDataAlignment(wavFile);
 
-    writeRiffHeaderSizeElement(wavFile);  // Finalizes the RIFF header size
+    writeRiffHeaderSizeElement(wavFile); // Finalizes the RIFF header size
     wavFile.close();
 }
 short removeOldFile(const std::string &filename)
@@ -429,9 +452,6 @@ std::string display_suffix(std::string num, int power, std::string designator)
 }
 void setupQuestions()
 {
-    std::cout << "Binary File to WAV Repeater with Smoothing" << std::endl;
-    std::cout << "by Anthro Teacher and Nathan" << std::endl
-              << std::endl;
     while (filename.empty())
     {
         std::cout << "Enter Binary Filename: ";
@@ -645,7 +665,7 @@ NO_OPTIMIZE void stringMemoryAllocation(const std::string &textParameter)
 
 int main()
 {
-    cout << "Image to WAV Converter v.1.4\n";
+    cout << "Binary File to WAV Converter " << VERSION << endl;
     cout << "Copyright (c) 2024 Anthro Teacher\n\n";
 
     setupQuestions();
